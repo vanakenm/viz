@@ -1,0 +1,261 @@
+
+<html>
+
+<head>
+<title>South Kivu Health Patients</title>
+  <link rel="stylesheet" href="http://cartodb-libs.global.ssl.fastly.net/cartodbui/assets/3.16.11/stylesheets/cartodb.css" />
+<script src="http://libs.cartocdn.com/cartodb.js/v3/cartodb.js"></script>
+  </script>
+  
+  <!--[if lte IE 8]>
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/themes/css/cartodb.ie.css" />
+  <![endif]-->
+
+  
+  
+  <style id="jsbin-css">
+    
+<style id="jsbin-css">
+    html, body { width:800px; height:100%; padding: 0; margin: 0;     font:  11px "Helvetica",Arial ;}
+	a {    font: 14px "Verdana"; }
+    #map { width: 80%; height:100%; float:right }
+    #leftPanel { position: relative; left: 10px; width: 18%;  background: #293547; z-index:10;height: 97%;
+    padding: 10px; }
+    #menu a {
+     
+      height: 10px;
+    margin: 1px 10px 0 0;
+    float: left;
+    vertical-align: middle;
+    padding: 10px;
+    text-align: left;
+    font: bold 11px "Helvetica",Arial;
+    line-height: normal;
+    color: #555;
+    border-radius: 2px;
+    border: 1px solid #777777;
+    background: #ffffff;
+    text-decoration: none;
+    cursor: pointer;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    }
+    #menu a.selected,
+    #menu a:hover {
+     
+      background: #A1D194;
+    }
+#logo { position: absolute; bottom: 20px; left: 10px;  background: transparent; z-index:2000000; line-height: 0px;}
+#filters {font-family: Helvetica,Arial; font-size: 15px; font-weight:bold;   margin-bottom: 3px; color: white}
+
+#description {font-family: Helvetica,Arial; font-size: 11px;color: #555;    margin-bottom: 3px; color: #111485;position: absolute; top: 15px; left: 55px;z-index:2000000; display: none;}
+
+#rbftitle {margin-left:10px; margin:0px; font-family: Helvetica,Arial; font-size: 35px; font-weight:bold;    color: white}
+p {color: white;font-family: Helvetica,Arial; font-size: 12px; }
+</style>
+</head>
+
+
+  <body onLoad="init()">
+  <div id='map'> </div>
+<div id='leftPanel'>
+   <h1 id="rbftitle">SKV Patients Feedback</h1>
+   <p>Location of interviewed patients in South Kivu, during the period of February, 2016. Filter the view by health centers that treated the patients to see catchment area of each of them.</p><br/>
+    <div id='menu'>
+   <p id="filters">SELECT FACILITY:</p>
+   <a href="#all" id="all" class="button all">ALL FACILITIES</a>
+<a href="#muku" id="muku" class="button muku">CS MUKU</a>
+<a href="#MULAMBA" id="MULAMBA" class="button MULAMBA">CS MULAMBA</a>
+<a href="#BIDEKA" id="BIDEKA" class="button BIDEKA">CS BIDEKA</a>
+<a href="#BURHALE" id="BURHALE" class="button BURHALE">CS BURHALE</a>
+<a href="#CAGOMBE" id="CAGOMBE" class="button CAGOMBE">CS CAGOMBE</a>
+<a href="#CAZI" id="CAZI" class="button CAZI">CS CAZI</a>
+<a href="#IBINZA" id="IBINZA" class="button IBINZA">CS IBINZA</a>
+<a href="#IKOMA" id="IKOMA" class="button IKOMA">CS IKOMA</a>
+<a href="#IZIRANGABO" id="IZIRANGABO" class="button IZIRANGABO">CS IZIRANGABO</a>
+<a href="#KALOLE" id="KALOLE" class="button KALOLE">CS KALOLE</a>
+<a href="#KAMPUSE" id="KAMPUSE" class="button KAMPUSE">CS KAMPUSE</a>
+<a href="#KARHUNDU" id="KARHUNDU" class="button KARHUNDU">CS KARHUNDU</a>
+<a href="#KAZIMU" id="KAZIMU" class="button KAZIMU">CS KAZIMU</a>
+<a href="#KIDODOBO" id="KIDODOBO" class="button KIDODOBO">CS KIDODOBO</a>
+<a href="#LURHALA" id="LURHALA" class="button LURHALA">CS LURHALA</a>
+<a href="#MUGOGO" id="MUGOGO" class="button MUGOGO">CS MUGOGO</a>
+<a href="#MWENDO" id="MWENDO" class="button MWENDO">CS MWENDO</a>
+<a href="#NYAKAKOBA" id="NYAKAKOBA" class="button NYAKAKOBA">CS NYAKAKOBA</a>
+<a href="#NYANJA" id="NYANJA" class="button NYANJA">CS NYANJA</a>
+<a href="#RUKWENDE" id="RUKWENDE" class="button RUKWENDE">CS RUKWENDE</a>
+<a href="#RUSHINDYE" id="RUSHINDYE" class="button RUSHINDYE">CS RUSHINDYE</a>
+<a href="#WALUNGU" id="WALUNGU" class="button WALUNGU">CS WALUNGU</a>
+</div>
+</div>
+<script> </script>
+<script id="jsbin-javascript">
+var map;
+function init(){
+// initiate leaflet map
+map = new L.Map('map', {
+center: [-2.621459573, 28.68800418],
+zoom: 12
+});
+ 
+L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+}).addTo(map);
+var layerUrl = 'https://eignatova.cartodb.com/api/v2/viz/5badd800-28bd-11e6-b5ce-0e674067d321/viz.json';
+ 
+var sublayers = [];
+ 
+cartodb.createLayer(map, layerUrl)
+.addTo(map)
+.on('done', function(layer) {
+// change the query for the first layer
+var subLayerOptions = {
+sql: "SELECT * FROM skv_regions"
+};
+ 
+var regions = layer.getSubLayer(0);
+var patients = layer.getSubLayer(1);
+
+var facilities = layer.getSubLayer(2);
+
+regions.set(subLayerOptions);
+ 
+sublayers.push(regions, patients, facilities);
+}).on('error', function() {
+//log the error
+});
+  
+$('.button').click(function() {
+
+  
+$('.button').removeClass('selected');
+$(this).addClass('selected');
+
+
+  
+LayerActions[$(this).attr('id')]();
+});
+var LayerActions = {
+all: function(){
+  	sublayers[1].setSQL("SELECT * FROM sub_summary_csv");
+  	sublayers[2].setSQL("SELECT * FROM skv_pbf_entities");
+return true;
+},
+muku: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS MUKU')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS MUKU'");
+return true;
+},
+MULAMBA: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS MULAMBA')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS MULAMBA'");
+return true;
+},
+BIDEKA: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS BIDEKA')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS BIDEKA'");
+return true;
+},
+BURHALE: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS BURHALE')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS BURHALE'");
+return true;
+},
+CAGOMBE: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS CAGOMBE')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS CAGOMBE'");
+return true;
+},
+CAZI: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS CAZI')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS CAZI'");
+return true;
+},
+IBINZA: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS IBINZA')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS IBINZA'");
+return true;
+},
+IKOMA: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS IKOMA')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS IKOMA'");
+return true;
+},
+IZIRANGABO: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS IZIRANGABO')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS IZIRANGABO'");
+return true;
+},
+KALOLE: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS KALOLE')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS KALOLE'");
+return true;
+},
+KAMPUSE: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS KAMPUSE')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS KAMPUSE'");
+return true;
+},
+KARHUNDU: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS KARHUNDU')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS KARHUNDU'");
+return true;
+},
+KAZIMU: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS KAZIMU')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS KAZIMU'");
+return true;
+},
+KIDODOBO: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS KIDODOBO')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS KIDODOBO'");
+return true;
+},
+LURHALA: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS LURHALA')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS LURHALA'");
+return true;
+},
+MUGOGO: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS MUGOGO')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS MUGOGO'");
+return true;
+},
+MWENDO: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS MWENDO')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS MWENDO'");
+return true;
+},
+NYAKAKOBA: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS NYAKAKOBA')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS NYAKAKOBA'");
+return true;
+},
+NYANJA: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS NYANJA')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS NYANJA'");
+return true;
+},
+RUKWENDE: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS RUKWENDE')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS RUKWENDE'");
+return true;
+},
+RUSHINDYE: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS RUSHINDYE')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS RUSHINDYE'");
+return true;
+},
+WALUNGU: function(){
+sublayers[1].setSQL("SELECT * FROM sub_summary_csv WHERE field_5 IN ('CS WALUNGU')");
+sublayers[2].setSQL("SELECT * FROM skv_pbf_entities WHERE entity='CS WALUNGU'");
+return true;
+}
+
+};
+}
+
+
+</script>
+</body>
+  
+</html>
